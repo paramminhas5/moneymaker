@@ -88,6 +88,6 @@ def test_cli_jurisdiction(cli_env: CliRunner) -> None:
 
 
 def test_cli_unbuilt_commands_say_which_phase(cli_env: CliRunner) -> None:
-    r = cli_env.invoke(app, ["gate", "s1_crypto_trend"])
+    r = cli_env.invoke(app, ["promote", "s1_crypto_trend", "--to", "paper"])
     assert r.exit_code == 2
-    assert "phase 3" in r.output
+    assert "phase 6" in r.output

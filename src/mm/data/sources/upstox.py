@@ -37,7 +37,9 @@ def _candles_to_frame(candles: list[list[Any]]) -> pl.DataFrame:
         candles, schema=["ts", "open", "high", "low", "close", "volume", "oi"], orient="row"
     )
     return df.select(
-        pl.col("ts").str.to_datetime("%Y-%m-%dT%H:%M:%S%z").dt.convert_time_zone("UTC")
+        pl.col("ts")
+        .str.to_datetime("%Y-%m-%dT%H:%M:%S%z")
+        .dt.convert_time_zone("UTC")
         .dt.cast_time_unit("ms"),
         *[pl.col(c).cast(pl.Float64) for c in ("open", "high", "low", "close", "volume")],
     ).with_columns((pl.col("close") * pl.col("volume")).alias("quote_volume"))
@@ -52,7 +54,9 @@ def fetch_daily(
     to = end
     while to >= start:
         frm = max(start, to - timedelta(days=365))
-        url = CANDLES.format(key=quote(instrument_key, safe=""), to=to.isoformat(), frm=frm.isoformat())
+        url = CANDLES.format(
+            key=quote(instrument_key, safe=""), to=to.isoformat(), frm=frm.isoformat()
+        )
         resp = client.get(url)
         if resp.status_code == 400:
             break

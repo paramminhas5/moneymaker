@@ -1,0 +1,83 @@
+{
+  "strategy_id": "s4_india_etf",
+  "gate": "G1",
+  "checks": [
+    {
+      "name": "OOS history length",
+      "passed": true,
+      "value": "15.00y",
+      "threshold": ">= 2.0y",
+      "detail": ""
+    },
+    {
+      "name": "OOS net Sharpe",
+      "passed": false,
+      "value": "-0.36",
+      "threshold": ">= 0.7",
+      "detail": "directional strategy"
+    },
+    {
+      "name": "Sharpe 95% CI lower bound",
+      "passed": false,
+      "value": "-1.48 (upper -0.08)",
+      "threshold": "> 0.0",
+      "detail": "stationary block bootstrap"
+    },
+    {
+      "name": "Deflated Sharpe probability",
+      "passed": false,
+      "value": "0.000",
+      "threshold": ">= 0.95",
+      "detail": "N = 12 logged trials"
+    },
+    {
+      "name": "Probability of backtest overfitting",
+      "passed": false,
+      "value": "0.405",
+      "threshold": "<= 0.2",
+      "detail": "252 CSCV splits"
+    },
+    {
+      "name": "Max drawdown within sleeve budget",
+      "passed": false,
+      "value": "108.0%",
+      "threshold": "<= 30%",
+      "detail": ""
+    },
+    {
+      "name": "Event-driven confirmation",
+      "passed": false,
+      "value": "not run",
+      "threshold": "<= 10%",
+      "detail": "relative gap in total return vs vectorised backtest"
+    }
+  ],
+  "data_snapshot": "396d3d88c8048515",
+  "code_commit": "411a6a3f842a4165161b1c75ac06ca705487e70b+dirty",
+  "metrics": {
+    "n": 3780.0,
+    "total_return": -1.1015145247067517,
+    "cagr": -1.0,
+    "vol": 1.6755144406192282,
+    "sharpe": -0.3588013819233808,
+    "sortino": -0.219336553251323,
+    "max_drawdown": 1.0799863137344863,
+    "calmar": -0.9259376598413535,
+    "skew": -59.24705886338416,
+    "kurtosis": 3585.7372421374794,
+    "hit_rate": 0.47173343317109695,
+    "deflated_sharpe": 2.194355808171622e-13,
+    "annual_turnover": 46.46538620078598,
+    "annual_cost_drag": 1.086706302858001,
+    "walkforward_stability": 0.4,
+    "pbo_degradation_slope": -0.9524220585653103
+  },
+  "notes": [
+    "Monthly rebalance; delivery only (NRI rules)",
+    "MOM30IETF listed mid-2024, so the momentum leg has a short history",
+    "Walk-forward: train 504 / test 126 periods, chose variants [0, 6, 6, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 6, 6, 6, 6, 10, 5, 5, 5, 0, 0, 2, 3, 9, 9, 6, 7, 8]",
+    "Event-driven confirmation not run: NautilusTrader harness is phase 5"
+  ],
+  "created_at": "2026-11-04T19:52:40+00:00",
+  "passed": false
+}
