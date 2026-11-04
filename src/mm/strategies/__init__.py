@@ -46,6 +46,7 @@ def register(spec: Spec) -> Spec:
 
 def _load_all() -> None:
     import mm.strategies.s1_crypto_trend
+    import mm.strategies.s1_crypto_trend_v2
     import mm.strategies.s2_funding_carry
     import mm.strategies.s4_india_etf  # noqa: F401
 
