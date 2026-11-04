@@ -40,4 +40,6 @@ def top_n_by_liquidity(
     ranked = panel.drop_nulls("liq").with_columns(
         pl.col("liq").rank(method="ordinal", descending=True).over("ts").alias("rank")
     )
-    return ranked.filter(pl.col("rank") <= n).select("ts", "symbol", "rank", "liq").sort("ts", "rank")
+    return (
+        ranked.filter(pl.col("rank") <= n).select("ts", "symbol", "rank", "liq").sort("ts", "rank")
+    )

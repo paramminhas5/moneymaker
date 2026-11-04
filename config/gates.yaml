@@ -1,0 +1,12 @@
+# Promotion gate thresholds (SPEC.md section 6). HUMAN-EDITED ONLY: loosening a gate is a
+# decision about how much overfitting risk to accept, not an engineering choice.
+g1:
+  min_dsr: 0.95                 # Deflated Sharpe probability, using the logged trial count
+  max_pbo: 0.20                 # Probability of Backtest Overfitting (CSCV)
+  min_oos_sharpe:
+    directional: 0.7
+    carry: 1.0
+  min_oos_years: 2.0            # OOS track record must cover at least this much history
+  min_sharpe_ci_lower: 0.0      # bootstrap 95% CI lower bound on OOS Sharpe must be above this
+  max_event_driven_gap: 0.10    # event-driven vs vectorised total return, relative
+  min_walkforward_stability: 0.0  # reported, not enforced yet

@@ -47,7 +47,9 @@ def fetch_daily(client: PoliteClient, coin: str, start_ms: int) -> pl.DataFrame:
         cursor = nxt
     if not frames:
         return pl.DataFrame()
-    return pl.concat(frames).with_columns((pl.col("close") * pl.col("volume")).alias("quote_volume"))
+    return pl.concat(frames).with_columns(
+        (pl.col("close") * pl.col("volume")).alias("quote_volume")
+    )
 
 
 def fetch_funding(client: PoliteClient, coin: str, start_ms: int) -> pl.DataFrame:

@@ -29,8 +29,13 @@ def fetch_open_markets(
     for i in range(max_pages):
         resp = client.get(
             GAMMA,
-            params={"active": "true", "closed": "false", "limit": page, "offset": i * page,
-                    "liquidity_num_min": min_liquidity},
+            params={
+                "active": "true",
+                "closed": "false",
+                "limit": page,
+                "offset": i * page,
+                "liquidity_num_min": min_liquidity,
+            },
         )
         resp.raise_for_status()
         batch: list[dict[str, Any]] = resp.json()
