@@ -1,0 +1,5 @@
+# Global settings. `jurisdiction.active` is human-edited only (CLAUDE.md hard rule).
+mode: backtest          # backtest | paper | live
+base_currency: USD
+jurisdiction:
+  active: singapore     # where the owner is physically and legally trading from right now

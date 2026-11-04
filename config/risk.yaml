@@ -1,0 +1,19 @@
+# Risk limits. HUMAN-EDITED ONLY. Agents may read, never write (CLAUDE.md).
+account:
+  max_daily_loss_pct: 3      # halt new entries for the day
+  max_drawdown_pct: 20       # flatten everything and halt; human restart only
+  max_gross_leverage: 1.0
+sleeve_defaults:
+  max_drawdown_pct: 25       # flatten and demote the sleeve
+  max_capital_pct: 50
+sleeves:
+  s1_crypto_trend: {max_drawdown_pct: 35, max_capital_pct: 50}
+  s2_funding_carry: {max_drawdown_pct: 10, max_capital_pct: 30}
+  s4_india_etf: {max_drawdown_pct: 30, max_capital_pct: 20}
+orders:
+  max_order_notional_usd: 60       # micro-capital phase; raise only via a human edit
+  max_position_notional_usd: 120
+  price_band_pct: 2
+  exit_depth_multiple: 20
+kelly_fraction_cap: 0.5
+edge_haircut: 0.5

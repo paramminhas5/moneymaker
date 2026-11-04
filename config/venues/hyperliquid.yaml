@@ -1,0 +1,6 @@
+name: hyperliquid
+maker_fee_bps: 1.5     # base tier perps; verify current schedule
+taker_fee_bps: 4.5
+min_notional_usd: 10
+max_orders_per_second: 5
+testnet_available: true

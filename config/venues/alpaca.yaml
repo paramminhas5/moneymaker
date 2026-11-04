@@ -1,0 +1,6 @@
+name: alpaca
+maker_fee_bps: 0
+taker_fee_bps: 0
+min_notional_usd: 1
+max_orders_per_second: 3
+testnet_available: true

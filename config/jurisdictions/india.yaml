@@ -1,0 +1,10 @@
+name: india
+description: Indian tax resident trading from India.
+max_leverage: 1.0
+venues:
+  binance: {read: true, spot: true, note: "FIU-registered. 30% tax, 1% TDS on sells, no loss set-off"}
+  delta_india: {read: true, perps: true, futures: true, note: "INR-settled, not SEBI-regulated; tax treatment unsettled"}
+  upstox: {read: true, stocks: true, etfs: true, mode: resident, intraday_equity: true, note: "Static IP + daily 2FA + under 10 orders/sec (SEBI, from 1 Apr 2026)"}
+  ibkr: {read: true, stocks: true, etfs: true, note: "LRS: cash account only, no margin"}
+  alpaca: {read: true, stocks: true, etfs: true, note: "paper only"}
+  polymarket: {read: false, prediction: false, note: "Blocked in India since May 2026"}

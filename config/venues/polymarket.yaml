@@ -1,0 +1,7 @@
+name: polymarket
+maker_fee_bps: 0
+taker_fee_bps: 0       # taker fee is C*rate*p*(1-p), category-dependent; modelled in costs/
+min_notional_usd: 1
+max_orders_per_second: 2
+testnet_available: false
+notes: ["Read-only unless the active jurisdiction allows prediction trading"]
