@@ -17,8 +17,10 @@ from mm.db.state import StateStore
 app = typer.Typer(help="MONEYMAKER control terminal. See SPEC.md.", no_args_is_help=True)
 jurisdiction_app = typer.Typer(help="Show or change the active jurisdiction profile.")
 db_app = typer.Typer(help="Database maintenance.")
+data_app = typer.Typer(help="Data lake: sync, status, quality checks.")
 app.add_typer(jurisdiction_app, name="jurisdiction")
 app.add_typer(db_app, name="db")
+app.add_typer(data_app, name="data")
 
 console = Console()
 
@@ -148,22 +150,130 @@ def db_init() -> None:
     console.print(f"Database ready: {engine.url.render_as_string(hide_password=True)}")
 
 
-@app.command()
-def data(action: str = typer.Argument("sync")) -> None:
-    """Data ingestion."""
-    _not_yet(2, f"`mm data {action}`")
+@data_app.command("sync")
+def data_sync(
+    job: Annotated[str | None, typer.Option(help="Run one job by name (default: all)")] = None,
+) -> None:
+    """Fetch new data from official sources, quality-check it and write it to the lake."""
+    from mm.data.catalog import Catalog
+    from mm.data.http import PoliteClient
+    from mm.data.quality import QualityReport
+    from mm.data.sync import load_jobs, run_job
+
+    settings = load_settings()
+    jobs = [j for j in load_jobs() if job is None or j.name == job]
+    if not jobs:
+        console.print(f"No job named '{job}'.")
+        raise typer.Exit(code=1)
+    cat = Catalog()
+
+    def show(rep: QualityReport) -> None:
+        mark = "[green]ok[/green]" if rep.ok else "[red]FAIL[/red]"
+        extra = "; ".join(rep.errors + rep.warnings)
+        console.print(f"  {mark} {rep.name} rows={rep.rows} {extra}")
+
+    failures = 0
+    with PoliteClient() as client:
+        for j in jobs:
+            console.print(f"[bold]{j.name}[/bold] ({j.source})")
+            failures += sum(not r.ok for r in run_job(j, settings, cat, client, on_report=show))
+    manifest = cat.write_manifest()
+    console.print(f"Snapshot {manifest['snapshot_id']}  failures={failures}")
+    if failures:
+        raise typer.Exit(code=1)
+
+
+@data_app.command("status")
+def data_status() -> None:
+    """What is in the lake: rows and date range per file, plus the snapshot ID."""
+    from mm.data.catalog import Catalog
+
+    cat = Catalog()
+    entries = cat.entries()
+    table = Table(title=f"Data lake  snapshot {cat.snapshot_id(entries)}")
+    for col in ("file", "rows", "start", "end"):
+        table.add_column(col)
+    for e in entries:
+        table.add_row(e.path, str(e.rows), (e.start or "")[:10], (e.end or "")[:10])
+    console.print(table)
+
+
+@data_app.command("check")
+def data_check() -> None:
+    """Re-run quality checks on everything in the lake."""
+    import polars as pl
+
+    from mm.data.catalog import Catalog
+    from mm.data.quality import check_bars, check_funding
+
+    cat = Catalog()
+    bad = 0
+    for path in sorted(cat.root.glob("*/*/*.parquet")):
+        dataset = path.parts[-3]
+        if dataset not in ("bars_1d", "funding"):
+            continue
+        df = pl.read_parquet(path)
+        name = str(path.relative_to(cat.root))
+        rep = check_funding(df, name) if dataset == "funding" else check_bars(df, name)
+        if not rep.ok or rep.warnings:
+            console.print(
+                f"{'FAIL' if not rep.ok else 'warn'} {name}: {'; '.join(rep.errors + rep.warnings)}"
+            )
+        bad += not rep.ok
+    console.print(f"{bad} files failing")
+    if bad:
+        raise typer.Exit(code=1)
 
 
 @app.command()
-def backtest(strategy: str, walkforward: bool = False) -> None:
-    """Backtest a strategy."""
-    _not_yet(4, f"`mm backtest {strategy}`")
+def backtest(strategy: str) -> None:
+    """Backtest a strategy with its base parameters and print the summary."""
+    from mm.research.pipeline import _run
+    from mm.strategies import get
+    from mm.validation.metrics import summarize
+
+    spec = get(strategy)
+    res = _run(spec, spec.load_data(), dict(spec.base_params))
+    s = summarize(res.net, spec.periods_per_year)
+    table = Table(title=f"{strategy} base backtest (net of costs)", show_header=False)
+    for k, v in s.as_dict().items():
+        table.add_row(k, f"{v:.4f}")
+    table.add_row("annual_turnover", f"{res.annual_turnover:.2f}")
+    table.add_row("annual_cost_drag", f"{res.annual_cost_drag:.4f}")
+    console.print(table)
 
 
 @app.command()
-def gate(strategy: str) -> None:
-    """Run validation gates G0/G1 and print the report."""
-    _not_yet(3, f"`mm gate {strategy}`")
+def gate(
+    strategy: str,
+    max_variants: Annotated[int | None, typer.Option(help="Cap sweep size (dev only)")] = None,
+) -> None:
+    """Run gates G0 and G1 (sweep, walk-forward, DSR, PBO) and save the report."""
+    from mm.research.pipeline import run_pipeline
+    from mm.strategies import get
+    from mm.validation.experiments import ExperimentLog
+
+    engine = make_engine()
+    init_db(engine)
+    res = run_pipeline(
+        get(strategy), ExperimentLog(engine), progress=console.print, max_variants=max_variants
+    )
+    console.print(res.g0.to_markdown())
+    if res.g1:
+        console.print(res.g1.to_markdown())
+    passed = res.g0.passed and res.g1 is not None and res.g1.passed
+    console.print("[green]PASSED[/green]" if passed else "[red]FAILED[/red]")
+    raise typer.Exit(code=0 if passed else 1)
+
+
+@app.command()
+def strategies() -> None:
+    """List registered strategies."""
+    from mm.strategies import all_ids, get
+
+    for sid in all_ids():
+        sp = get(sid)
+        console.print(f"{sid}  kind={sp.kind} venue={sp.venue} family={sp.family}")
 
 
 @app.command()
