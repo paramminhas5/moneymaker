@@ -1,0 +1,55 @@
+# Data sync jobs. Only official public endpoints. Each job is skipped if the active
+# jurisdiction profile does not allow reading its venue.
+jobs:
+  - name: crypto_spot_daily
+    source: binance_spot
+    venue: binance
+    dataset: bars_1d
+    start: 2017-08-01
+    # Candidate universe for S1. Includes delisted names (LUNA, FTT) so backtests see
+    # the coins that blew up, not just survivors. Membership is chosen point-in-time by liquidity.
+    symbols: [BTCUSDT, ETHUSDT, BNBUSDT, SOLUSDT, XRPUSDT, ADAUSDT, DOGEUSDT, TRXUSDT, DOTUSDT,
+              MATICUSDT, AVAXUSDT, LINKUSDT, LTCUSDT, BCHUSDT, UNIUSDT, ATOMUSDT, XLMUSDT,
+              ETCUSDT, FILUSDT, NEARUSDT, ICPUSDT, APTUSDT, ARBUSDT, OPUSDT, SUIUSDT, AAVEUSDT,
+              EOSUSDT, ALGOUSDT, VETUSDT, THETAUSDT, SHIBUSDT, PEPEUSDT, LUNAUSDT, FTTUSDT,
+              XMRUSDT, INJUSDT, TIAUSDT, SEIUSDT, RUNEUSDT, POLUSDT]
+  - name: crypto_perp_daily
+    source: binance_perp
+    venue: binance
+    dataset: bars_1d
+    start: 2019-09-01
+    symbols: [BTCUSDT, ETHUSDT, SOLUSDT, DOGEUSDT, AVAXUSDT, LINKUSDT, ARBUSDT, OPUSDT, SUIUSDT,
+              XRPUSDT, BNBUSDT, NEARUSDT]
+  - name: crypto_perp_funding
+    source: binance_funding
+    venue: binance
+    dataset: funding
+    start: 2019-09-01
+    symbols: [BTCUSDT, ETHUSDT, SOLUSDT, DOGEUSDT, AVAXUSDT, LINKUSDT, ARBUSDT, OPUSDT, SUIUSDT,
+              XRPUSDT, BNBUSDT, NEARUSDT]
+  - name: hyperliquid_daily
+    source: hyperliquid_bars
+    venue: hyperliquid
+    dataset: bars_1d
+    start: 2023-01-01
+    symbols: [BTC, ETH, SOL, DOGE, AVAX, LINK, ARB, OP, SUI, XRP, BNB, NEAR]
+  - name: hyperliquid_funding
+    source: hyperliquid_funding
+    venue: hyperliquid
+    dataset: funding
+    start: 2023-05-01
+    symbols: [BTC, ETH, SOL, DOGE, AVAX, LINK, ARB, OP, SUI, XRP, BNB, NEAR]
+  - name: india_etf_daily
+    source: upstox
+    venue: upstox
+    dataset: bars_1d
+    start: 2010-01-01
+    # Nifty 50, Next 50, Nifty100 Low Vol 30, Nifty200 Momentum 30, Bank, IT, gold, liquid, Nasdaq-100
+    symbols: [NIFTYBEES, JUNIORBEES, LOWVOLIETF, MOM30IETF, BANKBEES, ITBEES, GOLDBEES,
+              LIQUIDBEES, MON100]
+  - name: polymarket_snapshot
+    source: polymarket
+    venue: polymarket
+    dataset: pm_snapshots
+    start: 2026-01-01
+    symbols: [open_markets]
