@@ -15,11 +15,46 @@ from datetime import UTC, datetime
 import numpy as np
 import polars as pl
 
-
-FOOTBALL = {"fifwc", "fif", "epl", "ucl", "uel", "lal", "sea", "bun", "fl1", "mls", "efl",
-            "unl", "spl", "bra", "arg", "mex", "por", "ned", "tur", "sco"}
-SPORTS = {"mlb", "atp", "wta", "nba", "nfl", "cfb", "wnba", "ufc", "nhl", "crint", "cricipl",
-          "cbb", "ncaab", "f1", "pga", "boxing"}
+FOOTBALL = {
+    "fifwc",
+    "fif",
+    "epl",
+    "ucl",
+    "uel",
+    "lal",
+    "sea",
+    "bun",
+    "fl1",
+    "mls",
+    "efl",
+    "unl",
+    "spl",
+    "bra",
+    "arg",
+    "mex",
+    "por",
+    "ned",
+    "tur",
+    "sco",
+}
+SPORTS = {
+    "mlb",
+    "atp",
+    "wta",
+    "nba",
+    "nfl",
+    "cfb",
+    "wnba",
+    "ufc",
+    "nhl",
+    "crint",
+    "cricipl",
+    "cbb",
+    "ncaab",
+    "f1",
+    "pga",
+    "boxing",
+}
 ESPORTS = {"lol", "cs2", "dota2", "val", "r6", "rl"}
 CRYPTO = {"bitcoin", "btc", "ethereum", "eth", "solana", "sol", "xrp", "crypto", "doge"}
 MENTIONS = {"elon", "what", "trump-say", "say"}
@@ -80,9 +115,7 @@ def find_trades(markets: pl.DataFrame, prices: pl.DataFrame, p: BondParams) -> p
                     .alias("floor"),
                     (pl.col("t") - pl.col("t").min().over("side")).alias("age"),
                 )
-                .filter(
-                    (pl.col("floor") >= p.lo) & (pl.col("age") >= p.stable_hours * 3600)
-                )
+                .filter((pl.col("floor") >= p.lo) & (pl.col("age") >= p.stable_hours * 3600))
             )
         cand = px.filter(
             (pl.col("price") >= p.lo)

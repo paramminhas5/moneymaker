@@ -156,11 +156,11 @@ def trade(d: Day, entry: tuple[int, int, float], ex: Exits) -> tuple[float, str]
         hi, lo, op = d.h[k], d.lo[k], d.o[k]
         sl_hit = sl is not None and ((side > 0 and lo <= sl) or (side < 0 and hi >= sl))
         tp_hit = tp is not None and ((side > 0 and hi >= tp) or (side < 0 and lo <= tp))
-        if sl_hit:  # stop first on ties (conservative); gaps fill at the open
+        if sl_hit and sl is not None:  # stop first on ties (conservative); gaps fill at open
             gap = (side > 0 and op < sl) or (side < 0 and op > sl)
             exit_px, how, hours = float(op if gap else sl), "sl", k + 1 - k0
             break
-        if tp_hit:
+        if tp_hit and tp is not None:
             exit_px, how, hours = float(tp), "tp", k + 1 - k0
             break
     price_ret = side * (exit_px / px - 1)
@@ -224,7 +224,7 @@ def run(days: list[Day], entry: Entry, ex: Exits) -> Result:
         cagr=float(final ** (1 / years) - 1) if final > 0 else -1.0,
         max_dd=float(np.max(1 - eq / peaks)),
         worst_streak=best,
-        pos_months=float((monthly["r"] > 0).mean()),
+        pos_months=float(monthly.select((pl.col("r") > 0).mean()).item()),
         final_multiple=final,
         yearly=dict(zip(yearly["y"].to_list(), yearly["ret"].to_list(), strict=True)),
     )
