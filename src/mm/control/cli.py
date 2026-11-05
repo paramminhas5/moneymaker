@@ -21,6 +21,8 @@ data_app = typer.Typer(help="Data lake: sync, status, quality checks.")
 app.add_typer(jurisdiction_app, name="jurisdiction")
 app.add_typer(db_app, name="db")
 app.add_typer(data_app, name="data")
+paper_app = typer.Typer(help="Paper trading against live prices (no keys, no real money).")
+app.add_typer(paper_app, name="paper")
 
 console = Console()
 
@@ -280,3 +282,80 @@ def strategies() -> None:
 def promote(strategy: str, to: str = typer.Option(..., "--to")) -> None:
     """Request promotion to the next stage (human approval workflow)."""
     _not_yet(6, f"`mm promote {strategy} --to {to}`")
+
+
+@paper_app.command("run")
+def paper_run(
+    strategy: str,
+    capital: Annotated[float, typer.Option(help="Starting paper capital in USD")] = 1500.0,
+) -> None:
+    """One paper rebalance: latest signal, live Hyperliquid prices, conservative taker fills."""
+    from decimal import Decimal
+
+    from mm.data.http import PoliteClient
+    from mm.execution.hyperliquid_md import HyperliquidMD
+    from mm.execution.paper import run_paper
+    from mm.strategies import get
+
+    engine = make_engine()
+    init_db(engine)
+    with PoliteClient() as client:
+        rep = run_paper(
+            get(strategy),
+            load_settings(),
+            engine,
+            HyperliquidMD(client),
+            capital=Decimal(str(capital)),
+        )
+    console.print(f"[bold]{strategy}[/bold] paper run {rep.ts:%Y-%m-%d %H:%M} UTC")
+    console.print(
+        f"equity ${rep.equity:.2f}  cash ${rep.cash:.2f}  funding paid ${rep.funding_paid:.4f}"
+    )
+    for f in rep.fills:
+        console.print(f"  [green]fill[/green] {f}")
+    for r in rep.rejections:
+        console.print(f"  [red]rejected[/red] {r}")
+    for k in rep.skipped:
+        console.print(f"  [yellow]skipped[/yellow] {k}")
+
+
+@paper_app.command("status")
+def paper_status(strategy: str) -> None:
+    """Paper positions, equity history and recent orders."""
+    from sqlalchemy import select
+
+    from mm.db.schema import EquitySnapshot, OrderRecord, SystemState
+    from mm.db.session import session_scope
+
+    engine = make_engine()
+    init_db(engine)
+    with session_scope(engine) as s:
+        acct = s.get(SystemState, f"paper:{strategy}")
+        snaps = s.scalars(
+            select(EquitySnapshot)
+            .where(EquitySnapshot.sleeve == strategy, EquitySnapshot.mode == "paper")
+            .order_by(EquitySnapshot.ts)
+        ).all()
+        orders = s.scalars(
+            select(OrderRecord)
+            .where(OrderRecord.strategy_id == strategy)
+            .order_by(OrderRecord.created_at.desc())
+            .limit(10)
+        ).all()
+        if acct is None:
+            console.print(f"No paper account for {strategy} yet. Run `mm paper run {strategy}`.")
+            raise typer.Exit(code=1)
+        v = dict(acct.value)
+        console.print(f"capital ${float(v['capital']):.2f}  cash ${float(v['cash']):.2f}")
+        for coin, pos in v.get("positions", {}).items():
+            console.print(f"  {coin}: qty {pos['qty']} avg {float(pos['avg']):.4f}")
+        if snaps:
+            first, last = float(snaps[0].equity_usd), float(snaps[-1].equity_usd)
+            console.print(
+                f"equity: {len(snaps)} snapshots, ${first:.2f} -> ${last:.2f} "
+                f"({last / float(v['capital']) - 1:+.2%} since start)"
+            )
+        for o in orders:
+            console.print(
+                f"  {o.created_at:%Y-%m-%d} {o.status:8} {o.side} {o.quantity} {o.symbol}"
+            )

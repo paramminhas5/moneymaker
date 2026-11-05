@@ -8,8 +8,8 @@
 from __future__ import annotations
 
 import io
-from collections.abc import Sequence
 import zipfile
+from collections.abc import Sequence
 from datetime import UTC, date, datetime
 
 import polars as pl

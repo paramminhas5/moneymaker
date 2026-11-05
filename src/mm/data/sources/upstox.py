@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import gzip
 import json
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from typing import Any
 from urllib.parse import quote
 
@@ -49,7 +49,7 @@ def fetch_daily(
     client: PoliteClient, instrument_key: str, start: date, end: date | None = None
 ) -> pl.DataFrame:
     """Walk backwards in one-year windows until the API returns nothing or `start` is reached."""
-    end = end or date.today()
+    end = end or datetime.now(UTC).date()
     frames: list[pl.DataFrame] = []
     to = end
     while to >= start:

@@ -9,6 +9,7 @@ var/
 reports/**/*.parquet
 .env
 .env.*
+!ledger/
 !.env.example
 *.secrets.*
 secrets/

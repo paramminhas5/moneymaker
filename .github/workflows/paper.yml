@@ -1,0 +1,56 @@
+name: paper
+# Daily paper rebalance for strategies the owner approved for the paper stage.
+# No keys, no real money: public market data only. The ledger (SQLite) lives on the
+# `paper-ledger` branch so the track record survives between runs.
+on:
+  schedule:
+    - cron: "20 0 * * *"   # 00:20 UTC, after the daily candle closes
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: paper
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      MM_DATABASE_URL: sqlite:///ledger/paper.db
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v3
+      - run: uv python install 3.12 && uv sync
+      - name: Restore ledger
+        run: |
+          mkdir -p ledger
+          if git ls-remote --exit-code origin paper-ledger >/dev/null; then
+            git fetch origin paper-ledger
+            git show origin/paper-ledger:ledger/paper.db > ledger/paper.db
+          fi
+      - name: Sync data
+        run: uv run mm data sync --job crypto_spot_daily
+      - name: Paper rebalance
+        run: |
+          for s in $(ls config/strategies/*.yaml); do
+            sid=$(basename "$s" .yaml)
+            if grep -q "^stage: paper" "$s"; then
+              uv run mm paper run "$sid" --capital 1500 | tee -a "$GITHUB_STEP_SUMMARY"
+              uv run mm paper status "$sid" | tee -a "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+      - name: Save ledger
+        run: |
+          git config user.name "mm-paper-bot"
+          git config user.email "mm-paper-bot@users.noreply.github.com"
+          cp ledger/paper.db /tmp/paper.db
+          if git ls-remote --exit-code origin paper-ledger >/dev/null; then
+            git checkout -B paper-ledger origin/paper-ledger
+          else
+            git checkout --orphan paper-ledger && git rm -rfq .
+          fi
+          mkdir -p ledger && cp /tmp/paper.db ledger/paper.db
+          git add ledger/paper.db
+          git commit -m "paper ledger $(date -u +%Y-%m-%d)" || echo "no change"
+          git push origin paper-ledger
