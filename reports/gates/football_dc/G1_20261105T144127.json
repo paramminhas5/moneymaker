@@ -1,0 +1,81 @@
+{
+  "strategy_id": "football_dc",
+  "gate": "G1",
+  "checks": [
+    {
+      "name": "OOS history length",
+      "passed": true,
+      "value": "10.00y",
+      "threshold": ">= 2.0y",
+      "detail": ""
+    },
+    {
+      "name": "OOS net Sharpe",
+      "passed": false,
+      "value": "-1.55",
+      "threshold": ">= 0.7",
+      "detail": "directional strategy"
+    },
+    {
+      "name": "Sharpe 95% CI lower bound",
+      "passed": false,
+      "value": "-2.16 (upper -0.99)",
+      "threshold": "> 0.0",
+      "detail": "stationary block bootstrap"
+    },
+    {
+      "name": "Deflated Sharpe probability",
+      "passed": false,
+      "value": "0.000",
+      "threshold": ">= 0.95",
+      "detail": "N = 18 logged trials"
+    },
+    {
+      "name": "Probability of backtest overfitting",
+      "passed": false,
+      "value": "0.409",
+      "threshold": "<= 0.2",
+      "detail": "252 CSCV splits"
+    },
+    {
+      "name": "Max drawdown within sleeve budget",
+      "passed": false,
+      "value": "100.0%",
+      "threshold": "<= 25%",
+      "detail": ""
+    },
+    {
+      "name": "Event-driven confirmation",
+      "passed": false,
+      "value": "not run",
+      "threshold": "<= 10%",
+      "detail": "relative gap in total return vs vectorised backtest"
+    }
+  ],
+  "data_snapshot": "fb21a4e4d966082c",
+  "code_commit": "5741488c85e599db56820ac92cab0e937b14f57e",
+  "metrics": {
+    "n": 3650.0,
+    "total_return": -0.9999836701766442,
+    "cagr": -0.6678776144504135,
+    "vol": 0.5961729636865947,
+    "sharpe": -1.5532405130783387,
+    "sortino": -1.1998427572954822,
+    "max_drawdown": 0.9999850830636442,
+    "calmar": -0.6678875772868967,
+    "skew": 1.3076177897042875,
+    "kurtosis": 17.356194299000872,
+    "hit_rate": 0.34363177805800754,
+    "deflated_sharpe": 7.460590506491727e-08,
+    "walkforward_stability": 0.4,
+    "pbo_degradation_slope": -0.8425270954814178
+  },
+  "notes": [
+    "Hypothetical 1% flat stakes at Pinnacle's early price (PSH/PSD/PSA)",
+    "Research only: Polymarket trading is disabled in every profile",
+    "Walk-forward train/test (730, 365), chose variants [2, 5, 5, 5, 2, 5, 1, 8, 8, 3]",
+    "Event-driven confirmation not run: not applicable until a paper venue exists"
+  ],
+  "created_at": "2026-11-05T14:41:27+00:00",
+  "passed": false
+}

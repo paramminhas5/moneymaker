@@ -1,0 +1,40 @@
+{
+  "strategy_id": "btc_dipbuy",
+  "gate": "G0",
+  "checks": [
+    {
+      "name": "no-lookahead harness",
+      "passed": true,
+      "value": "True",
+      "threshold": "True",
+      "detail": ""
+    },
+    {
+      "name": "unit tests",
+      "passed": true,
+      "value": "True",
+      "threshold": "True",
+      "detail": ""
+    },
+    {
+      "name": "cost model attached",
+      "passed": true,
+      "value": "12.0bp flat",
+      "threshold": "a model",
+      "detail": ""
+    },
+    {
+      "name": "deterministic replay",
+      "passed": true,
+      "value": "True",
+      "threshold": "True",
+      "detail": "same seed + snapshot + commit gives identical returns"
+    }
+  ],
+  "data_snapshot": "5fddddc01da3535a",
+  "code_commit": "5741488c85e599db56820ac92cab0e937b14f57e",
+  "metrics": {},
+  "notes": [],
+  "created_at": "2026-11-05T14:39:34+00:00",
+  "passed": true
+}
