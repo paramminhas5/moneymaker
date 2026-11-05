@@ -188,3 +188,25 @@ def test_new_strategies_are_registered_with_costs() -> None:
         spec = get(sid)
         assert spec.cost_bps
         assert len(list(spec.sweep)) > 0
+
+
+def test_listing_fade_intraday_stop_caps_the_squeeze_loss() -> None:
+    from mm.research.listing_fade_stops import StopParams, simulate
+
+    n = 10
+    ts = _days(n)
+    px: list[float | None] = [None, 10.0, 10, 10, 60, 60, 60, 60, 60, 60]  # +500% on day 4
+    hi: list[float | None] = [None, 10.0, 10, 10, 65, 60, 60, 60, 60, 60]
+    close = pl.DataFrame({"ts": ts, "X": px})
+    high = pl.DataFrame({"ts": ts, "X": hi})
+    zero = pl.DataFrame({"ts": ts, "X": [0.0] * n})
+    p = StopParams(delay=1, hold=20, stop=0.5, max_names=1, slippage=0.1, cost_bps=0.0)
+    r, trades, stops = simulate(close, high, close, zero, p)
+    assert trades == 1
+    assert stops == 1
+    # Gap open at 60 > stop 15: filled at 60 * 1.1 = 66 vs prior close 10 -> -560%.
+    assert r[4] == pytest.approx(-(66 / 10 - 1))
+    p2 = StopParams(delay=1, hold=20, stop=0.5, max_names=1, slippage=0.1, cost_bps=0.0)
+    opn = pl.DataFrame({"ts": ts, "X": [None, 10.0, 10, 10, 10, 60, 60, 60, 60, 60]})
+    r2, _, _ = simulate(close, high, opn, zero, p2)
+    assert r2[4] == pytest.approx(-(15 * 1.1 / 10 - 1))  # stop hit intraday: filled at 16.5
