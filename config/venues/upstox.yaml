@@ -1,0 +1,7 @@
+name: upstox
+maker_fee_bps: 12      # estimate incl. STT 0.1% on delivery + charges; verify, modelled in costs/
+taker_fee_bps: 12
+min_notional_usd: 0
+max_orders_per_second: 5   # SEBI threshold is 10/sec; stay well under
+testnet_available: true
+notes: ["Order placement only from whitelisted static IP", "Daily 2FA login"]

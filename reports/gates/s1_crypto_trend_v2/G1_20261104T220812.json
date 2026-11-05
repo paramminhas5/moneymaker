@@ -1,0 +1,83 @@
+{
+  "strategy_id": "s1_crypto_trend_v2",
+  "gate": "G1",
+  "checks": [
+    {
+      "name": "OOS history length",
+      "passed": true,
+      "value": "6.48y",
+      "threshold": ">= 2.0y",
+      "detail": ""
+    },
+    {
+      "name": "OOS net Sharpe",
+      "passed": true,
+      "value": "1.35",
+      "threshold": ">= 0.7",
+      "detail": "directional strategy"
+    },
+    {
+      "name": "Sharpe 95% CI lower bound",
+      "passed": true,
+      "value": "0.46 (upper 2.14)",
+      "threshold": "> 0.0",
+      "detail": "stationary block bootstrap"
+    },
+    {
+      "name": "Deflated Sharpe probability",
+      "passed": true,
+      "value": "0.996",
+      "threshold": ">= 0.95",
+      "detail": "N = 57 logged trials"
+    },
+    {
+      "name": "Probability of backtest overfitting",
+      "passed": false,
+      "value": "1.000",
+      "threshold": "<= 0.2",
+      "detail": "252 CSCV splits"
+    },
+    {
+      "name": "Max drawdown within sleeve budget",
+      "passed": true,
+      "value": "13.7%",
+      "threshold": "<= 25%",
+      "detail": ""
+    },
+    {
+      "name": "Event-driven confirmation",
+      "passed": false,
+      "value": "not run",
+      "threshold": "<= 10%",
+      "detail": "relative gap in total return vs vectorised backtest"
+    }
+  ],
+  "data_snapshot": "82b3b3d31db28713",
+  "code_commit": "4b9e43fd8127b938216cc161457bb23041e3193a+dirty",
+  "metrics": {
+    "n": 2366.0,
+    "total_return": 1.3984193797513313,
+    "cagr": 0.14448629424176018,
+    "vol": 0.10391093670778721,
+    "sharpe": 1.3508204269576947,
+    "sortino": 1.044786213061626,
+    "max_drawdown": 0.13659549366711776,
+    "calmar": 1.0577676493038068,
+    "skew": 0.5745027907251616,
+    "kurtosis": 13.489857794475617,
+    "hit_rate": 0.5281173594132029,
+    "deflated_sharpe": 0.9955296456263729,
+    "annual_turnover": 12.673398070669423,
+    "annual_cost_drag": 0.015253311616431868,
+    "walkforward_stability": 0.5384615384615384,
+    "pbo_degradation_slope": -1.0020983618206318
+  },
+  "notes": [
+    "v1 signal + BTC 200d gate (+/-3% hysteresis) + ATR(20) chandelier exit",
+    "Only atr_mult varied; trials share the s1_v1 family so the DSR counts all 57",
+    "Walk-forward: train 730 / test 182 periods, chose variants [0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 2, 2]",
+    "Event-driven confirmation not run: NautilusTrader harness is phase 5"
+  ],
+  "created_at": "2026-11-04T22:08:12+00:00",
+  "passed": false
+}

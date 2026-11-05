@@ -1,0 +1,6 @@
+name: binance
+maker_fee_bps: 10      # spot base tier; USD-M perps are 2/5 bps (verify current schedule)
+taker_fee_bps: 10
+min_notional_usd: 5
+max_orders_per_second: 5
+testnet_available: true

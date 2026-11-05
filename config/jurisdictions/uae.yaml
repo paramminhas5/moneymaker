@@ -1,0 +1,12 @@
+name: uae
+description: UAE tax residency (target base). Confirm every venue with local counsel before live.
+max_leverage: 1.0
+venues:
+  binance: {read: true, spot: true, perps: true, note: "Binance FZE holds a VARA licence; confirm which entity serves your KYC"}
+  hyperliquid: {read: true, perps: true, note: "Restricts only US, Ontario, sanctioned regions"}
+  ibkr: {read: true, stocks: true, etfs: true}
+  alpaca: {read: true, stocks: true, etfs: true, note: "paper only until live eligibility confirmed"}
+  upstox: {read: true, stocks: true, etfs: true, mode: nri, intraday_equity: false, note: "NRI: delivery only, no intraday equity"}
+  polymarket: {read: true, prediction: false, note: "Not on Polymarket's list; UAE law on prediction markets unclear. Trade only after legal sign-off"}
+notes:
+  - "Personal investment gains excluded from UAE tax (Cabinet Decision 49/2023) if not run as a licensed business"

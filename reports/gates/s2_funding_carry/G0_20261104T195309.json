@@ -1,0 +1,40 @@
+{
+  "strategy_id": "s2_funding_carry",
+  "gate": "G0",
+  "checks": [
+    {
+      "name": "no-lookahead harness",
+      "passed": true,
+      "value": "True",
+      "threshold": "True",
+      "detail": ""
+    },
+    {
+      "name": "unit tests",
+      "passed": true,
+      "value": "True",
+      "threshold": "True",
+      "detail": ""
+    },
+    {
+      "name": "cost model attached",
+      "passed": true,
+      "value": "9.0bp flat",
+      "threshold": "a model",
+      "detail": ""
+    },
+    {
+      "name": "deterministic replay",
+      "passed": true,
+      "value": "True",
+      "threshold": "True",
+      "detail": "same seed + snapshot + commit gives identical returns"
+    }
+  ],
+  "data_snapshot": "396d3d88c8048515",
+  "code_commit": "411a6a3f842a4165161b1c75ac06ca705487e70b+dirty",
+  "metrics": {},
+  "notes": [],
+  "created_at": "2026-11-04T19:53:09+00:00",
+  "passed": true
+}

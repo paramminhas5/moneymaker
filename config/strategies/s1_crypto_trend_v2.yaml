@@ -1,0 +1,10 @@
+# Stage set by the human owner. Approved for PAPER trading only, in chat on 2026-11-05 03:44 IST
+# ("yes approve for paper trading"). Live or micro stages need a separate approval via `mm promote`.
+id: s1_crypto_trend_v2
+stage: paper
+approved_by: human
+approved_at: 2026-11-05T03:44:00+05:30
+venue_live: hyperliquid
+notes:
+  - G1 status at approval: OOS Sharpe 1.35, DSR 0.996 (N=57); failed PBO and event-driven check
+  - Paper trading is how the event-driven check gets satisfied; no real money until G1 and G2 pass

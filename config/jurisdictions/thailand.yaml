@@ -1,0 +1,12 @@
+name: thailand
+description: Physically trading from Thailand.
+max_leverage: 1.0
+venues:
+  binance: {read: true, note: "Use Binance TH (separate licensed entity) if at all; Binance.com status for Thai residents unverified"}
+  hyperliquid: {read: true, perps: true}
+  bybit: {read: false, note: "Blocked by Thai SEC from 28 Jun 2025"}
+  okx: {read: false, note: "Blocked by Thai SEC from 28 Jun 2025"}
+  ibkr: {read: true, stocks: true, etfs: true}
+  alpaca: {read: true, stocks: true, etfs: true, note: "paper only"}
+  upstox: {read: true, stocks: true, etfs: true, mode: nri, intraday_equity: false}
+  polymarket: {read: true, prediction: false, note: "Polymarket lists Thailand as close-only"}

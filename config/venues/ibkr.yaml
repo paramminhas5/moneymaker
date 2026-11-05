@@ -1,0 +1,7 @@
+name: ibkr
+maker_fee_bps: 0       # per-share pricing: $0.005/share, $1 minimum; modelled in costs/
+taker_fee_bps: 0
+min_notional_usd: 1
+max_orders_per_second: 5
+testnet_available: true
+notes: ["$1 minimum commission makes small orders expensive (~0.9% of $115)"]

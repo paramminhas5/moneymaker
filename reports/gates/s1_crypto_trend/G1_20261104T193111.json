@@ -1,0 +1,83 @@
+{
+  "strategy_id": "s1_crypto_trend",
+  "gate": "G1",
+  "checks": [
+    {
+      "name": "OOS history length",
+      "passed": true,
+      "value": "6.48y",
+      "threshold": ">= 2.0y",
+      "detail": ""
+    },
+    {
+      "name": "OOS net Sharpe",
+      "passed": true,
+      "value": "0.79",
+      "threshold": ">= 0.7",
+      "detail": "directional strategy"
+    },
+    {
+      "name": "Sharpe 95% CI lower bound",
+      "passed": false,
+      "value": "-0.10 (upper 1.66)",
+      "threshold": "> 0.0",
+      "detail": "stationary block bootstrap"
+    },
+    {
+      "name": "Deflated Sharpe probability",
+      "passed": false,
+      "value": "0.877",
+      "threshold": ">= 0.95",
+      "detail": "N = 54 logged trials"
+    },
+    {
+      "name": "Probability of backtest overfitting",
+      "passed": true,
+      "value": "0.190",
+      "threshold": "<= 0.2",
+      "detail": "252 CSCV splits"
+    },
+    {
+      "name": "Max drawdown within sleeve budget",
+      "passed": true,
+      "value": "28.3%",
+      "threshold": "<= 35%",
+      "detail": ""
+    },
+    {
+      "name": "Event-driven confirmation",
+      "passed": false,
+      "value": "not run",
+      "threshold": "<= 10%",
+      "detail": "relative gap in total return vs vectorised backtest"
+    }
+  ],
+  "data_snapshot": "0a81eefc446df27e",
+  "code_commit": "fbb00ad0ef39788c8ad85dca9adb4606bb0d6fbc+dirty",
+  "metrics": {
+    "n": 2366.0,
+    "total_return": 1.397483833784737,
+    "cagr": 0.14441741309435496,
+    "vol": 0.19525136920317746,
+    "sharpe": 0.7886330893343618,
+    "sortino": 0.65289417050779,
+    "max_drawdown": 0.28340894669232364,
+    "calmar": 0.5095725268374762,
+    "skew": 0.07095848630963202,
+    "kurtosis": 24.94683990771201,
+    "hit_rate": 0.4813486370157819,
+    "deflated_sharpe": 0.8767006923588136,
+    "annual_turnover": 23.788115593607067,
+    "annual_cost_drag": 0.02747043526819282,
+    "walkforward_stability": 0.46153846153846156,
+    "pbo_degradation_slope": -0.8004004407411853
+  },
+  "notes": [
+    "Universe is point-in-time top-N by trailing 90d median quote volume",
+    "Includes delisted names (LUNA, FTT) in candidates: no survivorship bias",
+    "Walk-forward: train 730 / test 182 periods, chose variants [35, 24, 6, 8, 6, 7, 7, 8, 8, 8, 8, 8, 26]",
+    "Event-driven confirmation not run: NautilusTrader harness is phase 5"
+  ],
+  "created_at": "2026-11-04T19:31:11+00:00",
+  "passed": false
+}

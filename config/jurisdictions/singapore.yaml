@@ -1,0 +1,12 @@
+name: singapore
+description: Physically trading from Singapore.
+max_leverage: 1.0
+venues:
+  binance: {read: true, note: "Binance.com stopped serving Singapore users in 2021"}
+  hyperliquid: {read: true, perps: true, note: "Accessible; on MAS Investor Alert List (not a ban)"}
+  ibkr: {read: true, stocks: true, etfs: true}
+  alpaca: {read: true, stocks: true, etfs: true, note: "paper only until live eligibility confirmed"}
+  upstox: {read: true, stocks: true, etfs: true, mode: nri, intraday_equity: false}
+  polymarket: {read: true, prediction: false, note: "Polymarket lists Singapore as close-only"}
+notes:
+  - "MAS-licensed exchanges may not offer leverage to retail customers"
