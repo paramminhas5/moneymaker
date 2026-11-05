@@ -16,6 +16,30 @@ import numpy as np
 import polars as pl
 
 
+FOOTBALL = {"fifwc", "fif", "epl", "ucl", "uel", "lal", "sea", "bun", "fl1", "mls", "efl",
+            "unl", "spl", "bra", "arg", "mex", "por", "ned", "tur", "sco"}
+SPORTS = {"mlb", "atp", "wta", "nba", "nfl", "cfb", "wnba", "ufc", "nhl", "crint", "cricipl",
+          "cbb", "ncaab", "f1", "pga", "boxing"}
+ESPORTS = {"lol", "cs2", "dota2", "val", "r6", "rl"}
+CRYPTO = {"bitcoin", "btc", "ethereum", "eth", "solana", "sol", "xrp", "crypto", "doge"}
+MENTIONS = {"elon", "what", "trump-say", "say"}
+
+
+def category(event_slug: str) -> str:
+    pre = event_slug.split("-", 1)[0] if event_slug else ""
+    if pre in FOOTBALL:
+        return "football"
+    if pre in SPORTS:
+        return "sports"
+    if pre in ESPORTS:
+        return "esports"
+    if pre in CRYPTO or "-above-" in event_slug or "up-or-down" in event_slug:
+        return "crypto"
+    if pre in MENTIONS or "tweets" in event_slug:
+        return "mentions"
+    return "politics_other"
+
+
 @dataclass(frozen=True, slots=True)
 class BondParams:
     lo: float = 0.95
@@ -24,8 +48,9 @@ class BondParams:
     min_days: float = 0.0  # skip entries this close to close (in-play last minutes)
     fill_haircut: float = 0.002  # 0.2c worse than observed
     settle_lag_days: float = 0.1  # capital locked a little after close (UMA liveness)
-    exclude_tags: tuple[str, ...] = ()
-    include_tags: tuple[str, ...] = ()
+    categories: tuple[str, ...] = ()  # empty = all
+    one_per_event: bool = True  # correlated legs of one event count once
+    stable_hours: float = 0.0  # require price >= lo for this long before entering
     min_lifetime_days: float = 1.0  # skip 5/15-minute markets
 
 
@@ -34,10 +59,8 @@ def find_trades(markets: pl.DataFrame, prices: pl.DataFrame, p: BondParams) -> p
     rows: list[dict[str, object]] = []
     by_mkt = {k[0]: v for k, v in prices.partition_by("market_id", as_dict=True).items()}
     for m in markets.iter_rows(named=True):
-        tags = set(str(m["tags"]).split(",")) if m["tags"] else set()
-        if p.include_tags and not tags & set(p.include_tags):
-            continue
-        if p.exclude_tags and tags & set(p.exclude_tags):
+        cat = category(str(m["event_slug"]))
+        if p.categories and cat not in p.categories:
             continue
         start, closed = m["start"], m["closed"]
         if start is not None and (closed - start).total_seconds() < p.min_lifetime_days * 86_400:
@@ -46,6 +69,21 @@ def find_trades(markets: pl.DataFrame, prices: pl.DataFrame, p: BondParams) -> p
         if px is None or px.is_empty():
             continue
         close_ts = closed.timestamp()
+        if p.stable_hours > 0:
+            px = (
+                px.sort("side", "t")
+                .with_columns(pl.from_epoch("t").alias("dt"))
+                .with_columns(
+                    pl.col("price")
+                    .rolling_min_by("dt", window_size=f"{int(p.stable_hours * 60)}m")
+                    .over("side")
+                    .alias("floor"),
+                    (pl.col("t") - pl.col("t").min().over("side")).alias("age"),
+                )
+                .filter(
+                    (pl.col("floor") >= p.lo) & (pl.col("age") >= p.stable_hours * 3600)
+                )
+            )
         cand = px.filter(
             (pl.col("price") >= p.lo)
             & (pl.col("price") <= p.hi)
@@ -63,7 +101,8 @@ def find_trades(markets: pl.DataFrame, prices: pl.DataFrame, p: BondParams) -> p
             {
                 "market_id": m["market_id"],
                 "question": m["question"],
-                "tags": m["tags"],
+                "event": m["event_slug"],
+                "category": cat,
                 "entry_t": datetime.fromtimestamp(first["t"], tz=UTC),
                 "exit_t": datetime.fromtimestamp(close_ts + p.settle_lag_days * 86_400, tz=UTC),
                 "entry": entry,
@@ -72,7 +111,12 @@ def find_trades(markets: pl.DataFrame, prices: pl.DataFrame, p: BondParams) -> p
                 "hold_days": hold,
             }
         )
-    return pl.DataFrame(rows) if rows else pl.DataFrame()
+    if not rows:
+        return pl.DataFrame()
+    out = pl.DataFrame(rows).sort("entry_t")
+    if p.one_per_event:
+        out = out.unique(subset="event", keep="first", maintain_order=True)
+    return out
 
 
 @dataclass(frozen=True, slots=True)
