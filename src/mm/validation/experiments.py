@@ -77,3 +77,75 @@ class ExperimentLog:
             rows = s.scalars(select(Experiment.metrics).where(Experiment.family == family)).all()
         vals = [float(m[key]) for m in rows if key in m]
         return np.asarray(vals, dtype=np.float64)
+
+    def export_csv(self, family: str, path: str) -> int:
+        import csv
+        import json
+
+        with session_scope(self.engine) as s:
+            rows = s.scalars(
+                select(Experiment).where(Experiment.family == family).order_by(Experiment.id)
+            ).all()
+            out = [
+                {
+                    "id": r.id,
+                    "strategy_id": r.strategy_id,
+                    "params": json.dumps(r.params, sort_keys=True),
+                    "data_snapshot": r.data_snapshot,
+                    "code_commit": r.code_commit,
+                    "seed": r.seed,
+                    "metrics": json.dumps(r.metrics, sort_keys=True),
+                }
+                for r in rows
+            ]
+        with open(path, "w", newline="") as fh:
+            w = csv.DictWriter(
+                fh,
+                fieldnames=[
+                    "id",
+                    "strategy_id",
+                    "params",
+                    "data_snapshot",
+                    "code_commit",
+                    "seed",
+                    "metrics",
+                ],
+            )
+            w.writeheader()
+            w.writerows(out)
+        return len(out)
+
+    def backfill_csv(self, family: str, path: str, strategy_id: str) -> int:
+        """Log each CSV row as one trial, tagged with snapshot `backfill:<file>`. Idempotent:
+        rows already back-filled from the same file are not logged again."""
+        import csv
+        from pathlib import Path
+
+        tag = f"backfill:{Path(path).name}"
+        with session_scope(self.engine) as s:
+            done = int(
+                s.scalar(
+                    select(func.count())
+                    .select_from(Experiment)
+                    .where(Experiment.family == family, Experiment.data_snapshot == tag)
+                )
+                or 0
+            )
+        with open(path, newline="") as fh:
+            rows = list(csv.DictReader(fh))
+        for row in rows[done:]:
+            metrics: dict[str, float] = {}
+            params: dict[str, Any] = dict(row)
+            for k, v in row.items():
+                try:
+                    metrics[k] = float(v)
+                except (TypeError, ValueError):
+                    continue
+            self.log(
+                strategy_id=strategy_id,
+                family=family,
+                params=params | {"_source": tag},
+                data_snapshot=tag,
+                metrics=metrics,
+            )
+        return len(rows) - done
