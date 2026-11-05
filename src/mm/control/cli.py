@@ -359,3 +359,92 @@ def paper_status(strategy: str) -> None:
             console.print(
                 f"  {o.created_at:%Y-%m-%d} {o.status:8} {o.side} {o.quantity} {o.symbol}"
             )
+
+
+theme_app = typer.Typer(help="Theme-call sleeve: record manual theme calls, score them vs QQQ.")
+app.add_typer(theme_app, name="theme")
+exp_app = typer.Typer(help="Experiment log: trial counts per family, export, back-fill.")
+app.add_typer(exp_app, name="experiments")
+
+
+@theme_app.command("add")
+def theme_add(
+    ticker: str,
+    thesis: Annotated[str, typer.Option(help="One line: why this theme, why now")],
+    on: Annotated[
+        str | None, typer.Option("--date", help="Call date YYYY-MM-DD (default today)")
+    ] = None,
+    horizon_days: Annotated[int, typer.Option(help="Days the call is scored over")] = 180,
+) -> None:
+    """Record a theme call in ledger/theme_calls.csv. Entry is the first close after the date."""
+    from datetime import UTC, date, datetime
+
+    from mm.research.theme_calls import ThemeCall, add_call
+
+    d = date.fromisoformat(on) if on else datetime.now(UTC).date()
+    add_call(ThemeCall(d, ticker.upper(), thesis, horizon_days))
+    console.print(f"Recorded {ticker.upper()} on {d} ({horizon_days}d): {thesis}")
+
+
+@theme_app.command("report")
+def theme_report() -> None:
+    """Score every recorded call against QQQ over the same dates."""
+    from mm.research.theme_calls import load_calls, score, summary, yahoo_prices
+
+    calls = load_calls()
+    if not calls:
+        console.print("No theme calls yet. Add one with `mm theme add TICKER --thesis '...'`.")
+        return
+    scored = score(calls, yahoo_prices)
+    table = Table(title="Theme calls vs QQQ")
+    for col in ("date", "ticker", "status", "ret", "qqq", "excess", "thesis"):
+        table.add_column(col)
+    for r in scored.iter_rows(named=True):
+
+        def f(x: float | None) -> str:
+            return "-" if x is None else f"{x:+.1%}"
+
+        table.add_row(str(r["date"]), r["ticker"], r["status"], f(r["ret"]), f(r["qqq"]),
+                      f(r["excess"]), str(r["thesis"])[:50])  # fmt: skip
+    console.print(table)
+    for k, v in summary(scored).items():
+        console.print(f"{k}: {v:.3f}")
+
+
+@exp_app.command("list")
+def experiments_list() -> None:
+    """Trial count per experiment family (the N in each Deflated Sharpe)."""
+    from sqlalchemy import func, select
+
+    from mm.db.schema import Experiment
+    from mm.db.session import session_scope
+
+    engine = make_engine()
+    init_db(engine)
+    with session_scope(engine) as s:
+        rows = s.execute(select(Experiment.family, func.count()).group_by(Experiment.family)).all()
+    for fam, n in sorted(rows):
+        console.print(f"{fam}: {n}")
+
+
+@exp_app.command("export")
+def experiments_export(family: str, out: str) -> None:
+    """Write every logged trial of a family to CSV (the local DB is not in git)."""
+    from mm.validation.experiments import ExperimentLog
+
+    engine = make_engine()
+    init_db(engine)
+    n = ExperimentLog(engine).export_csv(family, out)
+    console.print(f"{n} trials of {family} -> {out}")
+
+
+@exp_app.command("backfill")
+def experiments_backfill(family: str, csv_path: str, strategy_id: str) -> None:
+    """Log a research grid CSV (one row per variant) as trials, once. Keeps DSR counts honest
+    when trials were run before the experiment DB existed or on another machine."""
+    from mm.validation.experiments import ExperimentLog
+
+    engine = make_engine()
+    init_db(engine)
+    n = ExperimentLog(engine).backfill_csv(family, csv_path, strategy_id)
+    console.print(f"back-filled {n} trials into {family}")
