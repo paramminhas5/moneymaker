@@ -152,3 +152,31 @@ def trailing_stop(
                 held.append(wt)
         out = out.with_columns(pl.Series(s, held))
     return out
+
+
+def hold_between_rebalances(
+    close: pl.DataFrame, target: pl.DataFrame, rebalance: list[bool]
+) -> pl.DataFrame:
+    """Weights that move to `target` only on rebalance days and drift with prices in between
+    (cash, the unallocated remainder, earns 0). Matches the backtester's drift formula, so
+    non-rebalance days trade nothing. Causal: day t uses closes up to t."""
+    syms = [c for c in close.columns if c != "ts"]
+    px = [close[s].to_list() for s in syms]
+    tg = [target[s].fill_null(0.0).to_list() for s in syms]
+    n = close.height
+    cur = [0.0] * len(syms)
+    out: list[list[float]] = [[] for _ in syms]
+    for i in range(n):
+        if i > 0:
+            rets = []
+            for j in range(len(syms)):
+                a, b = px[j][i - 1], px[j][i]
+                rets.append(b / a - 1 if a is not None and b is not None and a > 0 else 0.0)
+            port = sum(w * r for w, r in zip(cur, rets, strict=True))
+            if 1 + port > 0:
+                cur = [w * (1 + r) / (1 + port) for w, r in zip(cur, rets, strict=True)]
+        if rebalance[i]:
+            cur = [tg[j][i] for j in range(len(syms))]
+        for j in range(len(syms)):
+            out[j].append(cur[j])
+    return close.select("ts").with_columns([pl.Series(s, out[j]) for j, s in enumerate(syms)])

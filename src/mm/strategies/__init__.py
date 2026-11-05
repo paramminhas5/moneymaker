@@ -31,7 +31,7 @@ class Spec:
     sweep: Mapping[str, list[Any]]  # grid for the research sweep
     walkforward: tuple[int, int] = (730, 182)  # train, test periods
     costs: Literal["bps", "model"] = "bps"
-    cost_bps: float = 10.0
+    cost_bps: float | Mapping[str, float] = 10.0  # flat, or per symbol
     capital: float = 115.0
     notes: list[str] = field(default_factory=list[str])
 
@@ -45,6 +45,9 @@ def register(spec: Spec) -> Spec:
 
 
 def _load_all() -> None:
+    import mm.strategies.btc_dipbuy
+    import mm.strategies.core_hold
+    import mm.strategies.listing_fade
     import mm.strategies.s1_crypto_trend
     import mm.strategies.s1_crypto_trend_v2
     import mm.strategies.s2_funding_carry

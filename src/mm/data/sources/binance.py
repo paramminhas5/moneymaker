@@ -121,3 +121,82 @@ def fetch_perp_funding(client: PoliteClient, symbol: str, start: date) -> pl.Dat
             )
         )
     return pl.concat(frames) if frames else pl.DataFrame()
+
+
+S3_LIST = "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision"
+_KEY_RE = r"<Key>([^<]+)</Key>"
+_PREFIX_RE = r"<Prefix>([^<]+)</Prefix>"
+
+
+def _s3_list(client: PoliteClient, prefix: str) -> tuple[list[str], list[str]]:
+    """All keys and common prefixes under `prefix` in the public archive bucket (paginated)."""
+    import re
+
+    keys: list[str] = []
+    prefixes: list[str] = []
+    marker = ""
+    while True:
+        resp = client.get(S3_LIST, params={"delimiter": "/", "prefix": prefix, "marker": marker})
+        resp.raise_for_status()
+        body = resp.text
+        page_keys = re.findall(_KEY_RE, body)
+        page_prefixes = [p for p in re.findall(_PREFIX_RE, body) if p != prefix]
+        keys += page_keys
+        prefixes += page_prefixes
+        if "<IsTruncated>true</IsTruncated>" not in body:
+            break
+        nxt = re.search(r"<NextMarker>([^<]+)</NextMarker>", body)
+        marker = nxt.group(1) if nxt else (page_keys or page_prefixes)[-1]
+    return keys, prefixes
+
+
+def list_perp_symbols(client: PoliteClient) -> list[str]:
+    """Every USD-M perp symbol that has ever had a monthly kline archive, delisted ones included."""
+    _, prefixes = _s3_list(client, "data/futures/um/monthly/klines/")
+    return sorted(p.rstrip("/").rsplit("/", 1)[-1] for p in prefixes)
+
+
+def perp_archive_months(client: PoliteClient, symbol: str) -> list[tuple[int, int]]:
+    """(year, month) of every daily-kline monthly archive for a perp, oldest first."""
+    import re
+
+    keys, _ = _s3_list(client, f"data/futures/um/monthly/klines/{symbol}/1d/")
+    out: list[tuple[int, int]] = []
+    for k in keys:
+        m = re.search(r"-1d-(\d{4})-(\d{2})\.zip$", k)
+        if m:
+            out.append((int(m.group(1)), int(m.group(2))))
+    return sorted(out)
+
+
+def fetch_perp_window(
+    client: PoliteClient, symbol: str, months: list[tuple[int, int]]
+) -> tuple[pl.DataFrame, pl.DataFrame]:
+    """Daily klines and funding for an explicit list of archive months."""
+    bars: list[pl.DataFrame] = []
+    funds: list[pl.DataFrame] = []
+    for y, m in months:
+        kl = _read_archive_csv(client, f"{ARCHIVE}/klines/{symbol}/1d/{symbol}-1d-{y}-{m:02d}.zip")
+        if kl is not None:
+            kl.columns = KLINE_COLS[: len(kl.columns)]
+            bars.append(_klines_to_frame(kl.rows()))
+        fr = _read_archive_csv(
+            client, f"{ARCHIVE}/fundingRate/{symbol}/{symbol}-fundingRate-{y}-{m:02d}.zip"
+        )
+        if fr is not None:
+            if fr.columns[0] != "calc_time":
+                fr.columns = ["calc_time", "funding_interval_hours", "last_funding_rate"]
+            funds.append(
+                fr.select(
+                    pl.from_epoch(pl.col("calc_time").cast(pl.Int64), time_unit="ms")
+                    .dt.replace_time_zone("UTC")
+                    .dt.truncate("1m")
+                    .alias("ts"),
+                    pl.col("last_funding_rate").cast(pl.Float64).alias("rate"),
+                    pl.col("funding_interval_hours").cast(pl.Float64).alias("interval_hours"),
+                )
+            )
+    return (
+        pl.concat(bars) if bars else pl.DataFrame(),
+        pl.concat(funds) if funds else pl.DataFrame(),
+    )

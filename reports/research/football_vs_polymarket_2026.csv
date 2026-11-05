@@ -1,0 +1,59 @@
+div,market,team,model_p,pm_mid,pm_ask,edge_vs_ask,liquidity,slug
+E0,p_title,Arsenal,0.7467,0.695,0.7,0.046700000000000075,133186.9358,will-arsenal-win-the-2026-27-english-premier-league-epl-championship-20260701200428750
+E0,p_title,Man City,0.2215,0.105,0.11,0.1115,184701.2782,will-manchester-city-win-the-2026-27-english-premier-league-epl-championship-20260701200428761
+E0,p_title,Brighton,0.021,0.0685,0.069,-0.048,157639.81296,will-brighton-win-the-2026-27-english-premier-league-epl-championship-20260701200428754
+E0,p_title,Liverpool,0.0079,0.055,0.057,-0.049100000000000005,177743.74008,will-liverpool-win-the-2026-27-english-premier-league-epl-championship-20260701200428760
+E0,p_title,Chelsea,0.0023,0.0365,0.037,-0.034699999999999995,138311.44881,will-chelsea-win-the-2026-27-english-premier-league-epl-championship-20260701200428755
+E0,p_title,Brentford,0.0003,0.0015,0.002,-0.0017000000000000001,576642.68109,will-brentford-win-the-2026-27-english-premier-league-epl-championship-20260701200428753
+E0,p_title,Bournemouth,0.0002,0.0005,0.001,-0.0008,908593.06857,will-bournemouth-win-the-2026-27-english-premier-league-epl-championship-20260701200428752
+E0,p_title,Newcastle,0.0001,0.0005,0.001,-0.0009,755360.77259,will-newcastle-united-win-the-2026-27-english-premier-league-epl-championship-20260701200428763
+E0,p_title,Nott'm Forest,0.0,0.0005,0.001,-0.001,536671.47201,will-nottingham-forest-win-the-2026-27-english-premier-league-epl-championship-20260701200428764
+E0,p_title,Aston Villa,0.0,0.0045,0.005,-0.005,736245.3265,will-aston-villa-win-the-2026-27-english-premier-league-epl-championship-20260701200428751
+E0,p_title,Everton,0.0,0.0005,0.001,-0.001,876851.77605,will-everton-win-the-2026-27-english-premier-league-epl-championship-20260701200428757
+E0,p_title,Fulham,0.0,0.0005,0.001,-0.001,508302.76245,will-fulham-win-the-2026-27-english-premier-league-epl-championship-20260701200428758
+E0,p_title,Leeds,0.0,0.0005,0.001,-0.001,642913.59368,will-leeds-united-win-the-2026-27-english-premier-league-epl-championship-20260701200428759
+E0,p_title,Man United,0.0,0.0055,0.007,-0.007,202452.529,will-manchester-united-win-the-2026-27-english-premier-league-epl-championship-20260701200428762
+E0,p_title,Tottenham,0.0,0.0105,0.012,-0.012,209070.01849,will-tottenham-win-the-2026-27-english-premier-league-epl-championship-20260701200428765
+E0,p_title,Sunderland,0.0,0.0005,0.001,-0.001,543726.93384,will-sunderland-win-the-2026-27-english-premier-league-epl-championship-20260701200428766
+E0,p_title,Coventry,0.0,0.0005,0.001,-0.001,557234.2712,will-coventry-city-win-the-2026-27-english-premier-league-epl-championship-20260701200428767
+E0,p_title,Ipswich,0.0,0.0005,0.001,-0.001,499434.64506,will-ipswich-town-win-the-2026-27-english-premier-league-epl-championship-20260701200428768
+E0,p_title,Hull,0.0,0.002,0.003,-0.003,101313.04551,will-hull-city-win-the-2026-27-english-premier-league-epl-championship-20260701200428769
+E0,p_title,Crystal Palace,0.0,0.0005,0.001,-0.001,122312.25202,will-crystal-palace-win-the-2026-27-english-premier-league-epl-championship-20260701200428756
+E0,p_top4,Arsenal,0.9983,0.975,0.981,0.017299999999999982,2679.55303,will-arsenal-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Man City,0.976,0.415,0.43,0.546,2810.0592,will-manchester-city-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Brighton,0.7334,0.59,0.6,0.13340000000000007,3117.7136,will-brighton-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Liverpool,0.5632,0.63,0.64,-0.07679999999999998,2335.5754,will-liverpool-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Chelsea,0.325,0.615,0.62,-0.295,3048.2783,will-chelsea-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Brentford,0.1371,0.155,0.17,-0.03290000000000001,1007.5923,will-brentford-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Bournemouth,0.0918,0.134,0.15,-0.05819999999999999,6121.36977,will-bournemouth-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Aston Villa,0.0803,0.1545,0.172,-0.09169999999999999,2513.23731,will-aston-villa-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Leeds,0.023,0.0575,0.062,-0.039,1354.0338,will-leeds-united-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Newcastle,0.022,0.08,0.09,-0.068,1270.3332,will-newcastle-united-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Everton,0.0205,0.066,0.119,-0.09849999999999999,467.14885,will-everton-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Man United,0.0103,0.08,0.09,-0.0797,2062.677,will-manchester-united-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Hull,0.0103,0.051,0.06,-0.049699999999999994,1846.56906,will-hull-city-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Tottenham,0.0052,0.1985,0.208,-0.20279999999999998,2462.40646,will-tottenham-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Fulham,0.0024,0.029,0.038,-0.0356,989.38513,will-fulham-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Nott'm Forest,0.0009,0.0765,0.08,-0.0791,1519.92316,will-nottingham-forest-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Coventry,0.0002,0.055,0.057,-0.0568,1283.64003,will-coventry-city-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Crystal Palace,0.0001,0.025,0.042,-0.0419,1057.18302,will-crystal-palace-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Sunderland,0.0,0.0165,0.029,-0.029,776.59368,will-sunderland-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+E0,p_top4,Ipswich,0.0,0.0035,0.004,-0.004,763.35859,will-ipswich-town-finish-in-the-top-4-of-the-2026-27-english-premier-league-season
+F1,p_title,Paris SG,0.9209,0.88,0.89,0.03090000000000004,98947.571,will-paris-saint-germain-win-the-2026-27-ligue-1-championship-20260701201053346
+F1,p_title,Lyon,0.0236,0.0145,0.015,0.0086,61734.84334,will-lyon-win-the-2026-27-ligue-1-championship-20260701201053342
+F1,p_title,Lille,0.0211,0.02,0.022,-0.000899999999999998,49703.4247,will-lille-win-the-2026-27-ligue-1-championship-20260701201053341
+F1,p_title,Monaco,0.0109,0.022,0.024,-0.0131,54084.52852,will-monaco-win-the-2026-27-ligue-1-championship-20260701201053344
+F1,p_title,Marseille,0.0085,0.013,0.015,-0.006499999999999999,54295.31548,will-marseille-win-the-2026-27-ligue-1-championship-20260701201053343
+F1,p_title,Lens,0.0067,0.011,0.014,-0.0073,54520.81078,will-lens-win-the-2026-27-ligue-1-championship-20260701201053340
+F1,p_title,Paris FC,0.0054,0.0075,0.009,-0.003599999999999999,56802.9626,will-paris-fc-win-the-2026-27-ligue-1-championship-20260701201053351
+F1,p_title,Rennes,0.0023,0.0095,0.01,-0.0077,53869.68717,will-rennes-win-the-2026-27-ligue-1-championship-20260701201053347
+F1,p_title,Strasbourg,0.0003,0.0015,0.002,-0.0017000000000000001,56049.80288,will-strasbourg-win-the-2026-27-ligue-1-championship-20260701201053348
+F1,p_title,Nice,0.0001,0.0005,0.001,-0.0009,64428.01942,will-nice-win-the-2026-27-ligue-1-championship-20260701201053345
+F1,p_title,Brest,0.0001,0.0005,0.001,-0.0009,52293.53796,will-brest-win-the-2026-27-ligue-1-championship-20260701201053338
+F1,p_title,Toulouse,0.0001,0.0015,0.002,-0.0019,45897.69363,will-toulouse-win-the-2026-27-ligue-1-championship-20260701201053349
+F1,p_title,Angers,0.0,0.0005,0.001,-0.001,39101.63951,will-angers-win-the-2026-27-ligue-1-championship-20260701201053336
+F1,p_title,Le Havre,0.0,0.0005,0.001,-0.001,51103.24443,will-le-havre-win-the-2026-27-ligue-1-championship-20260701201053339
+F1,p_title,Lorient,0.0,0.0005,0.001,-0.001,39276.37041,will-lorient-win-the-2026-27-ligue-1-championship-20260701201053350
+F1,p_title,Auxerre,0.0,0.0005,0.001,-0.001,52133.15532,will-auxerre-win-the-2026-27-ligue-1-championship-20260701201053337
+F1,p_title,Troyes,0.0,0.0005,0.001,-0.001,51068.27651,will-troyes-win-the-2026-27-ligue-1-championship-20260701201053352
+F1,p_title,Le Mans,0.0,0.0005,0.001,-0.001,51309.24784,will-le-mans-win-the-2026-27-ligue-1-championship-20260701201053353

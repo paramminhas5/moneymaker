@@ -1,0 +1,84 @@
+{
+  "strategy_id": "core_hold",
+  "gate": "G1",
+  "checks": [
+    {
+      "name": "OOS history length",
+      "passed": true,
+      "value": "15.00y",
+      "threshold": ">= 2.0y",
+      "detail": ""
+    },
+    {
+      "name": "OOS net Sharpe",
+      "passed": true,
+      "value": "1.08",
+      "threshold": ">= 0.7",
+      "detail": "directional strategy"
+    },
+    {
+      "name": "Sharpe 95% CI lower bound",
+      "passed": true,
+      "value": "0.45 (upper 1.64)",
+      "threshold": "> 0.0",
+      "detail": "stationary block bootstrap"
+    },
+    {
+      "name": "Deflated Sharpe probability",
+      "passed": true,
+      "value": "1.000",
+      "threshold": ">= 0.95",
+      "detail": "N = 17 logged trials"
+    },
+    {
+      "name": "Probability of backtest overfitting",
+      "passed": false,
+      "value": "0.881",
+      "threshold": "<= 0.2",
+      "detail": "252 CSCV splits"
+    },
+    {
+      "name": "Max drawdown within sleeve budget",
+      "passed": false,
+      "value": "27.2%",
+      "threshold": "<= 25%",
+      "detail": ""
+    },
+    {
+      "name": "Event-driven confirmation",
+      "passed": false,
+      "value": "not run",
+      "threshold": "<= 10%",
+      "detail": "relative gap in total return vs vectorised backtest"
+    }
+  ],
+  "data_snapshot": "19ad08f1831d6e56",
+  "code_commit": "5741488c85e599db56820ac92cab0e937b14f57e",
+  "metrics": {
+    "n": 3915.0,
+    "total_return": 6.0531402061396955,
+    "cagr": 0.1390920857967981,
+    "vol": 0.12878580062731323,
+    "sharpe": 1.0763972190240838,
+    "sortino": 0.9527579913531924,
+    "max_drawdown": 0.2723256525512354,
+    "calmar": 0.5107564582834491,
+    "skew": -1.5177519131971606,
+    "kurtosis": 26.58672239847523,
+    "hit_rate": 0.5584235359422703,
+    "deflated_sharpe": 0.9998870195197971,
+    "annual_turnover": 4.319363131350378,
+    "annual_cost_drag": 0.002167822756539421,
+    "walkforward_stability": 0.4,
+    "pbo_degradation_slope": -1.011202339970639
+  },
+  "notes": [
+    "Slots: ACWI 40%, QQQ 25%, NIFTYBEES 15%, BTC 12%, ETH 8%; cash when filter is off",
+    "Cash earns 0% in the backtest (conservative: T-bill yield ignored)",
+    "Buy-and-hold benchmark logged separately in the same family (scripts/run_core_hold.py)",
+    "Walk-forward: train 522 / test 261 periods, chose variants [0, 0, 0, 6, 6, 1, 1, 0, 7, 0, 0, 3, 3, 1, 5]",
+    "Event-driven confirmation not run: NautilusTrader harness is phase 5"
+  ],
+  "created_at": "2026-11-05T14:39:31+00:00",
+  "passed": false
+}

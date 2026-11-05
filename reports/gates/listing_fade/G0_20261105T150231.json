@@ -1,0 +1,40 @@
+{
+  "strategy_id": "listing_fade",
+  "gate": "G0",
+  "checks": [
+    {
+      "name": "no-lookahead harness",
+      "passed": true,
+      "value": "True",
+      "threshold": "True",
+      "detail": ""
+    },
+    {
+      "name": "unit tests",
+      "passed": true,
+      "value": "True",
+      "threshold": "True",
+      "detail": ""
+    },
+    {
+      "name": "cost model attached",
+      "passed": true,
+      "value": "20.0bp flat",
+      "threshold": "a model",
+      "detail": ""
+    },
+    {
+      "name": "deterministic replay",
+      "passed": true,
+      "value": "True",
+      "threshold": "True",
+      "detail": "same seed + snapshot + commit gives identical returns"
+    }
+  ],
+  "data_snapshot": "f375f591718355d9",
+  "code_commit": "42dc83fd2ec45f061d48d93e00011feaae2701a0+dirty",
+  "metrics": {},
+  "notes": [],
+  "created_at": "2026-11-05T15:02:31+00:00",
+  "passed": true
+}

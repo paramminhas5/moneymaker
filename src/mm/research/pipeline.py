@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import itertools
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
@@ -89,7 +89,7 @@ def run_pipeline(
         spec.id,
         no_lookahead=no_la,
         tests_passed=True,
-        cost_model=spec.venue if spec.costs == "model" else f"{spec.cost_bps}bp flat",
+        cost_model=_cost_label(spec),
         deterministic=deterministic,
         data_snapshot=snapshot,
         code_commit=commit,
@@ -164,6 +164,14 @@ def run_pipeline(
     g1.notes.append("Event-driven confirmation not run: NautilusTrader harness is phase 5")
     g1.save()
     return PipelineResult(g0, g1, base_a, variants, wf.oos_returns)
+
+
+def _cost_label(spec: Spec) -> str:
+    if spec.costs == "model":
+        return spec.venue
+    if isinstance(spec.cost_bps, Mapping):
+        return "per-symbol bps: " + ", ".join(f"{k} {v:g}" for k, v in spec.cost_bps.items())
+    return f"{spec.cost_bps}bp flat"
 
 
 def _trim(extras: dict[str, Any], d: pl.DataFrame) -> dict[str, Any]:

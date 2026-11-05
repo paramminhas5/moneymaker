@@ -1,0 +1,84 @@
+{
+  "strategy_id": "btc_dipbuy",
+  "gate": "G1",
+  "checks": [
+    {
+      "name": "OOS history length",
+      "passed": true,
+      "value": "6.98y",
+      "threshold": ">= 2.0y",
+      "detail": ""
+    },
+    {
+      "name": "OOS net Sharpe",
+      "passed": false,
+      "value": "0.29",
+      "threshold": ">= 0.7",
+      "detail": "directional strategy"
+    },
+    {
+      "name": "Sharpe 95% CI lower bound",
+      "passed": false,
+      "value": "-0.38 (upper 0.87)",
+      "threshold": "> 0.0",
+      "detail": "stationary block bootstrap"
+    },
+    {
+      "name": "Deflated Sharpe probability",
+      "passed": false,
+      "value": "0.281",
+      "threshold": ">= 0.95",
+      "detail": "N = 150 logged trials"
+    },
+    {
+      "name": "Probability of backtest overfitting",
+      "passed": false,
+      "value": "0.583",
+      "threshold": "<= 0.2",
+      "detail": "252 CSCV splits"
+    },
+    {
+      "name": "Max drawdown within sleeve budget",
+      "passed": false,
+      "value": "44.8%",
+      "threshold": "<= 25%",
+      "detail": ""
+    },
+    {
+      "name": "Event-driven confirmation",
+      "passed": false,
+      "value": "not run",
+      "threshold": "<= 10%",
+      "detail": "relative gap in total return vs vectorised backtest"
+    }
+  ],
+  "data_snapshot": "5fddddc01da3535a",
+  "code_commit": "5741488c85e599db56820ac92cab0e937b14f57e",
+  "metrics": {
+    "n": 2548.0,
+    "total_return": 0.32912251688506844,
+    "cagr": 0.04159920554987995,
+    "vol": 0.30193418233095987,
+    "sharpe": 0.2862833330913955,
+    "sortino": 0.15920682921121285,
+    "max_drawdown": 0.4483090628106109,
+    "calmar": 0.09279135534106661,
+    "skew": 0.18312335577286645,
+    "kurtosis": 37.58177208192665,
+    "hit_rate": 0.38971807628524047,
+    "deflated_sharpe": 0.2812621860550255,
+    "annual_turnover": 30.08241758241758,
+    "annual_cost_drag": 0.08689753489753488,
+    "walkforward_stability": 0.2857142857142857,
+    "pbo_degradation_slope": -0.5769601845758051
+  },
+  "notes": [
+    "Rule mined from reports/research/one_trade_day_v1.md (best of 126 scenarios)",
+    "Family one_trade_day_v1: the 126 prior scenarios are back-filled before the sweep",
+    "Spot, 1x, 12 bp one-way (taker 10 bp + spread/slippage)",
+    "Walk-forward: train 730 / test 182 periods, chose variants [6, 6, 6, 2, 0, 0, 0, 0, 3, 5, 5, 4, 4, 6]",
+    "Event-driven confirmation not run: NautilusTrader harness is phase 5"
+  ],
+  "created_at": "2026-11-05T14:39:35+00:00",
+  "passed": false
+}
