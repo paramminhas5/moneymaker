@@ -16,7 +16,8 @@ def load(syms):
 
 
 SECTORS = ["XLK", "XLE", "XLF", "XLV", "XLI", "XLY", "XLP", "XLU", "XLB"]
-THEMES = SECTORS + [
+THEMES = [
+    *SECTORS,
     "SMH",
     "SOXX",
     "IGV",
@@ -57,7 +58,9 @@ start = "2001-07-01"
 rows = []
 
 
-def stats(name, r, ts, extra={}):
+def stats(name, r, ts, extra=None):
+    if extra is None:
+        extra = {}
     df = pl.DataFrame({"ts": ts, "r": r}).filter(
         pl.col("ts") >= pl.datetime(2001, 7, 1, time_zone="UTC")
     )
@@ -80,7 +83,9 @@ def stats(name, r, ts, extra={}):
             "max_dd": s.max_drawdown,
             **{k: v for k, v in sub.items()},
             **extra,
-            "yearly": json.dumps({int(y): round(v, 3) for y, v in zip(yr["y"], yr["ret"])}),
+            "yearly": json.dumps(
+                {int(y): round(v, 3) for y, v in zip(yr["y"], yr["ret"], strict=False)}
+            ),
         }
     )
 

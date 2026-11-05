@@ -1,4 +1,4 @@
-"""Theme / sector momentum with a fast trend exit ("buy what's buzzing, sell at the first downtrend").
+"""Theme / sector momentum with a fast trend exit ("buy what is buzzing, sell at first downtrend").
 
 Weekly: rank ETFs that are above their 200-day average by a blend of 3/6/12-month returns and
 hold the top N equally. Daily: any holding that closes below its exit average is sold and the
