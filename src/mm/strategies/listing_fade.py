@@ -28,6 +28,38 @@ from mm.research.backtest import wide
 from mm.strategies import Spec, register
 
 ARCHIVE_START = "2020-01"
+# From mid-2025 Binance lists "TradFi" perps (stocks, ETFs, metals, FX, pre-IPO names). They are
+# not new coins, so they are excluded. The instrument type is announced at listing, but the
+# archive does not carry it, so it is recovered two ways: (1) the weekend test below (a perp on a
+# stock barely moves on Saturday/Sunday because its index is closed), (2) this explicit list for
+# names the test misses. This is static metadata, not a signal.
+TRADFI_EXTRA = {
+    "BXUSDT", "PFEUSDT", "SAMSUNGEMUSDT", "TBTUSDT", "UVXYUSDT", "SPYUSDT", "SPCXUSDT",
+    "EWTUSDT", "XBIUSDT", "EBAYUSDT", "HDUSDT", "NVOUSDT", "TXNUSDT", "PYPLUSDT", "POPMARTUSDT",
+    "GMEUSDT", "IWMUSDT", "NATGASUSDT", "CLUSDT", "JPMUSDT", "ANTHROPICUSDT", "OPENAIUSDT",
+    "BRKBUSDT", "DISUSDT", "MELIUSDT", "EWZUSDT", "XAUTUSDT", "PAXGUSDT", "XAUUSDT", "XAGUSDT",
+    "USDBRLUSDT",
+}  # fmt: skip
+WEEKEND_RATIO_MAX = 0.37  # mean |weekend return| / mean |weekday return| below this => TradFi
+
+
+def is_tradfi(symbol: str, bars: pl.DataFrame) -> bool:
+    if symbol in TRADFI_EXTRA:
+        return True
+    d = (
+        bars.sort("ts")
+        .head(60)
+        .with_columns(
+            (pl.col("close") / pl.col("close").shift(1) - 1).abs().alias("a"),
+            pl.col("ts").dt.weekday().alias("wd"),
+        )
+        .drop_nulls("a")
+    )
+    we = d.filter(pl.col("wd") >= 6)["a"].mean()
+    wk = d.filter(pl.col("wd") <= 5)["a"].mean()
+    if not isinstance(we, float) or not isinstance(wk, float) or wk == 0:
+        return False
+    return we / wk < WEEKEND_RATIO_MAX
 
 
 def listed_symbols(cat: Catalog) -> list[str]:
@@ -48,7 +80,7 @@ def load_data() -> dict[str, Any]:
     cat = Catalog()
     syms = listed_symbols(cat)
     bars = {s: cat.read("bars_1d", "binance_perp_new", s) for s in syms}
-    bars = {s: b for s, b in bars.items() if b.height > 0}
+    bars = {s: b for s, b in bars.items() if b.height > 0 and not is_tradfi(s, b)}
     close = wide(bars)
     fund: dict[str, pl.DataFrame] = {}
     for s in bars:

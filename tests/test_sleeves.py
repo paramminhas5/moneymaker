@@ -210,3 +210,17 @@ def test_listing_fade_intraday_stop_caps_the_squeeze_loss() -> None:
     opn = pl.DataFrame({"ts": ts, "X": [None, 10.0, 10, 10, 10, 60, 60, 60, 60, 60]})
     r2, _, _ = simulate(close, high, opn, zero, p2)
     assert r2[4] == pytest.approx(-(15 * 1.1 / 10 - 1))  # stop hit intraday: filled at 16.5
+
+
+def test_tradfi_perps_are_detected_by_quiet_weekends() -> None:
+    ts = _days(60)
+    rng = np.random.default_rng(0)
+    stock = [100.0]
+    coin = [100.0]
+    for d in ts[1:]:
+        weekend = d.weekday() >= 5
+        stock.append(stock[-1] * (1 + rng.normal(0, 0.001 if weekend else 0.02)))
+        coin.append(coin[-1] * (1 + rng.normal(0, 0.05)))
+    assert listing_fade.is_tradfi("NEWSTOCKUSDT", pl.DataFrame({"ts": ts, "close": stock}))
+    assert not listing_fade.is_tradfi("NEWCOINUSDT", pl.DataFrame({"ts": ts, "close": coin}))
+    assert listing_fade.is_tradfi("SPYUSDT", pl.DataFrame({"ts": ts, "close": coin}))
