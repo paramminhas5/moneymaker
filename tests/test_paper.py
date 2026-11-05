@@ -80,7 +80,7 @@ def test_research_stage_cannot_paper_trade(
             engine,
             FakeMD({"BTC": "100000"}),
             capital=Decimal(1000),
-        )  # type: ignore[arg-type]
+        )
 
 
 def test_paper_fills_fees_funding_and_rejections(
@@ -91,7 +91,7 @@ def test_paper_fills_fees_funding_and_rejections(
     # 0.04 x $1000 = $40 BTC fills; 0.5 x $1000 = $500 ETH breaches the $60 order cap.
     spec = make_spec({"BTCUSDT": 0.04, "ETHUSDT": 0.5, "LUNAUSDT": 0.1})
     t0 = datetime(2026, 11, 5, tzinfo=UTC)
-    rep = paper.run_paper(spec, sg, engine, md, capital=Decimal(1000), now=t0)  # type: ignore[arg-type]
+    rep = paper.run_paper(spec, sg, engine, md, capital=Decimal(1000), now=t0)
     assert len(rep.fills) == 1
     assert "BTC" in rep.fills[0]
     assert any("ETH" in r and "exceeds max" in r for r in rep.rejections)
@@ -107,7 +107,7 @@ def test_paper_fills_fees_funding_and_rejections(
         sg,
         engine,
         md,
-        capital=Decimal(1000),  # type: ignore[arg-type]
+        capital=Decimal(1000),
         now=t0 + timedelta(days=1),
     )
     assert rep2.funding_paid > 0
@@ -123,6 +123,6 @@ def test_kill_switch_blocks_paper_entries(
         engine,
         FakeMD({"BTC": "100000"}),
         capital=Decimal(1000),
-    )  # type: ignore[arg-type]
+    )
     assert not rep.fills
     assert any("kill switch" in r for r in rep.rejections)

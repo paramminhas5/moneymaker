@@ -12,20 +12,28 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from decimal import ROUND_DOWN, Decimal
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 import yaml
 from sqlalchemy import Engine
 
 from mm.config import Settings
 from mm.config.loader import config_dir
-from mm.core.types import Instrument, Mode, OrderIntent, OrderType, Product, Side, Stage
+from mm.core.types import BookTop, Instrument, Mode, OrderIntent, OrderType, Product, Side, Stage
 from mm.db.schema import AuditLog, EquitySnapshot, FillRecord, OrderRecord, SystemState
 from mm.db.session import session_scope
 from mm.db.state import StateStore
-from mm.execution.hyperliquid_md import HyperliquidMD, hl_coin
+from mm.execution.hyperliquid_md import CoinMeta, hl_coin
 from mm.risk.pretrade import PreTradeContext, check_order
 from mm.strategies import Spec
+
+
+class MarketData(Protocol):
+    def meta(self) -> dict[str, CoinMeta]: ...
+    def mids(self) -> dict[str, Decimal]: ...
+    def book(self, coin: str, band: float = 0.005) -> BookTop: ...
+    def funding_since(self, coin: str, start_ms: int) -> Decimal: ...
+
 
 VENUE = "hyperliquid"
 TAKER_FEE = Decimal("0.00045")
@@ -110,7 +118,7 @@ def run_paper(
     spec: Spec,
     settings: Settings,
     engine: Engine,
-    md: HyperliquidMD,
+    md: MarketData,
     *,
     capital: Decimal,
     now: datetime | None = None,
